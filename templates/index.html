@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Text Summarizer</title>
+  <link rel="stylesheet" href="static/styles.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body style="background-color: rgb(55, 23, 84);">
+  <h1 class="head">Abstractive Summarization of Long-Documents</h1>
+  <h5 style="color: blanchedalmond;margin: 2px auto 15px auto;text-align: center;">Have tired of Reading Long Documents then let's Summarize them..</h5>
+  <form method="POST" action="/summarize" enctype="multipart/form-data">
+    <input type="file" name="file" accept=".pdf, .txt">
+    <br>
+    <label for="min_length">Min Length:</label>
+    <input type="number" name="min_length" id="min_length" required>
+    <br>
+    <label for="max_length">Max Length:</label>
+    <input type="number" name="max_length" id="max_length" required>
+    <br>
+    <input type="submit" value="Summarize Document">
+  </form>
+  {% if error %}
+    <p style="color: red;">{{ error }}</p>
+  {% endif %}
+  {% if input_text %}
+    <h2 style="color: white;text-align: center;font-weight: bold;margin-top: 14px;margin-bottom: 1.5px;">Document Text:</h2>
+    <div id="document-text">
+      {{ input_text }}
+    </div>
+  {% endif %}
+  {% if summary_text %}
+    <h2 style="color: white;text-align: center;font-weight: bold;margin-top: 14px;margin-bottom: 1.5px;">Summarized Text:</h2>
+    <div id="summarized-text">
+      <span id="summary-animation"></span>
+    </div>
+
+      <script>
+        function animateSummary() {
+          var summaryText = "{{ summary_text }}";
+          var animationElement = document.getElementById('summary-animation');
+          var animationDuration = 1000; // Change this value to adjust animation speed
+
+          var animationIndex = 0;
+          var animationInterval = setInterval(function() {
+            if (animationIndex < summaryText.length) {
+              animationElement.textContent += summaryText[animationIndex];
+              animationIndex++;
+            } else {
+              clearInterval(animationInterval);
+              // Automatically scroll to the summarized text section
+              var summarizedTextElement = document.getElementById('summarized-text');
+              var summarizedTextPosition = summarizedTextElement.getBoundingClientRect().top;
+              window.scrollTo({
+                top: summarizedTextPosition,
+                behavior: 'smooth'
+              });
+            }
+          }, animationDuration / summaryText.length);
+        }
+
+        if ($("#summarized-text").length) {
+          animateSummary();
+        }
+      </script>
+  {% endif %}
+</body>
+</html>
+
+
+
+
